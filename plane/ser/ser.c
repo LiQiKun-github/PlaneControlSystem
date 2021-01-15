@@ -3,12 +3,7 @@
 #include"usermysql.h"
 #include"ser.h"
 #include"cli_link.h"
-
-
-//static struct cli_t *head=NULL;
-const int id=123;
-const char password[32]="123456";
-
+#include"user_mysql.h"
 
 //13信号函数
 void tcp_broken(int sig)
@@ -75,7 +70,9 @@ int user_Login(struct cli_t *p,int fd)
   printf("u->password : %s\n",u.password);
   p->count++;
   printf("count : %d\n",p->count);
-  if(u.id==id&&strcmp(u.password,password)==0)
+  int flag=user_login_check(u.id,u.password);
+  printf("flag : %d\n",flag);
+  if(flag==1)
   {
   	lat.flag=LOGIN_SUCCESS_FLAG;
 	p->count=0;
@@ -141,7 +138,7 @@ int epoll_Go()
   fd = socket_Tcp_Init(PORT,IP);//socket初始化
   if(fd < 0)
   {
-	perror("socket");
+	//perror("socket");
 	return -1;
   }
 
