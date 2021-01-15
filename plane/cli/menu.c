@@ -6,7 +6,13 @@
 #include"cli_socket.h"
 
 
-/*
+
+//管理员登陆
+void admin_Login()
+{                                                                                                                                                                                                          
+}
+
+
 //用户登陆
 void user_Login()
 {
@@ -18,16 +24,12 @@ void user_Login()
   else if(flag==1) return ;
   else continue;
   }
-}
-*/
-/*
-//管理员登陆
-void admin_Login()
-
-}
+}  
 
 
-//菜单 
+
+
+//菜单
 void menu()
 {
   while(1)
@@ -38,18 +40,16 @@ void menu()
   while(getchar()!='\n');
   switch(sel)
   {
-	case '1':admin_Login();    //管理员登陆
-			 break;
-	case '2':user_Login();     //用户登陆
-			 break;
-	case '3':return;
+    case '1':admin_Login();    //管理员登陆
+             break;
+    case '2':user_Login();     //用户登陆
+             break;
+    case '3':return;
   }
   }
 }
-*/
 
-int main()
-{
-  cli_start();
-  menu();
-}
+
+
+
+
