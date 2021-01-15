@@ -2,9 +2,10 @@
 #include"pack.h"
 #include"usermysql.h"
 #include"ser.h"
+#include"cli_link.h"
 
 
-static struct cli_t *head=NULL;
+//static struct cli_t *head=NULL;
 const int id=123;
 const char password[32]="123456";
 
@@ -14,19 +15,6 @@ void tcp_broken(int sig)
 {
 	printf("tcp broken.\n");
 	return;
-}
-
-
-//打印链表
-void print_link()
-{
-  struct cli_t *p=head;
-  if(p==NULL) printf("空空如也!!!\n");
-  while(p!=NULL)
-  {
-	printf("fd : %d\n",p->cfd);
-	p=p->next;
-  }
 }
 
 //sockt初始化
@@ -69,67 +57,6 @@ int socket_Tcp_Init(int port,char *strip)
 }
 
 
-//在链表中查找某个描述符的节点
-//cfd	要查找的文件描述符
-//return	找到返回找到的节点，未找到返回NULL
-struct cli_t *cli_find(int cfd)
-{
-  struct cli_t *p=head;
-  while(p!=NULL)
-  {
-	if(p->cfd==cfd)
-	  return p;
-	p=p->next;
-  }
-  return NULL;
-}
-
-
-
-//删除某个节点
-//参数：	last：所要删除节点的上一个节点	p：要删除的节点	
-void delete_cli_node(struct cli_t *last,struct cli_t *p)
-{
-  if(last==NULL) head=p->next;
-  else last->next=p->next;
-  free(p);
-}
-
-
-//查找某个节点的上一个节点
-//temp：所要查找节点的地址
-//return：返回上一个节点的地址
-struct cli_t *last_node(struct cli_t *temp)
-{
-  struct cli_t *p=head;
-  if(NULL==p) return NULL;
-  else if(temp==p) return NULL;
-  while(p->next!=NULL)
-  {
-	if(p->next==temp) return p;
-	p=p->next;
-  }
-  return NULL;
-}
-
-
-//关闭链表当中需要关闭的描述符
-void cli_close()
-{
-  struct cli_t *p=head;
-  struct cli_t *last;
-  while(p!=NULL)
-  {
-	if(p->close_flag==1)
-	{
-	  printf("OK\n");
-	  close(p->cfd);
-	  last=last_node(p);
-	  delete_cli_node(last,p);
-	}
-	p=p->next;
-  }
-}
 
 
 int user_Login(struct cli_t *p,int fd)
@@ -156,6 +83,7 @@ int user_Login(struct cli_t *p,int fd)
   else if(p->count>=3)
   {
 	lat.flag=LOGIN_BREAK_FLAG;
+	p->count=0;
   }
   else lat.flag=LOGIN_FAIL_FLAG;
 	pph=pack_Make(sizeof(struct login_answer_t),PACK_TYPE_LOGIN_ANSWER,PACK_VER_1,(void *)&lat);
@@ -254,14 +182,8 @@ int epoll_Go()
 		return -1;
 	  }
 
-	  //添加节点
-	  p=(struct cli_t*)malloc(sizeof(struct cli_t));
-	  p->cfd=nfd;
-	  p->addr=caddr;
-	  p->count=0;
-	  p->close_flag=0;
-	  p->next=head;
-	  head=p;
+	  add_cli_node(nfd,caddr);
+
 
 		//add epoll
 		ev.data.fd=nfd;

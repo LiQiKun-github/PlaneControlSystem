@@ -1,5 +1,5 @@
 ser:ser.c
-	gcc ser.c pack.c -o ser -Wall
+	gcc ser.c pack.c cli_link.c -o ser -Wall
 
 clean:
 	rm ser
