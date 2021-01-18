@@ -12,3 +12,4 @@ struct pack_head *pack_Make(int len,int type,int ver,char *data)
 	
 	return p;
 }
+

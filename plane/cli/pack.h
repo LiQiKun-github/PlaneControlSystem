@@ -10,7 +10,7 @@ struct pack_head
   char data[0];//追加的地址
 };
 
-struct login_answer_t
+struct answer_t
 {
   int flag;
 };
@@ -21,12 +21,23 @@ struct pack_head *pack_Make(short type,int len,int ver,void *data);
 
 
 
-#define PACK_HEAD_LEN 8
-#define PACK_TYPE_USER 1
-#define PACK_VER_1 1
+#define PACK_HEAD_LEN 8	//包头长度
+#define PACK_VER_1 1	//打包版本
 
-#define USER_TYPE 66
-#define USER_VER 1
+
+
+/*发送数据类型*/
+#define USER_LOGIN_TYPE 66	//用户登陆
+#define ADMIN_TYPE 2	//管理员登陆
+#define PACK_TYPE_LOGIN_ANSWER 25	//登陆回馈
+#define SHOW_ONE_USER_BACK_TYPE 1001	//查询单个用户回馈的数据包类型
+
+#define ADD_USER_TYPE 3	//添加用户
+#define DEL_USER_TYPE 4	//删除用户
+#define CHANGE_USER_TYPE 5	//更改用户信息
+#define SHOW_ALL_USER_TYPE 6	//查询用户信息
+#define SHOW_ONE_USER_TYPE 7	//查询用户信息
+
 
 
 
