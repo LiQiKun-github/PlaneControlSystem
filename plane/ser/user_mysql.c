@@ -1,5 +1,6 @@
 #include"common.h"
 #include"user_mysql.h"
+#include"user.h"
 
 
 
@@ -141,15 +142,15 @@ int show_One_User_Mysql(struct user *u,struct user *back_u)
   if(mysql_query(mysql,query))
   {
 	fprintf(stderr, "%s\n", mysql_error(mysql));
-	return 0;
+	return -1;
   }
   res=mysql_use_result(mysql);
   if(res==NULL)
   {
-    return 0; 
+    return -1; 
   }
   row=mysql_fetch_row(res);
-  if(row==NULL) return 1;	//查询结果为空
+  if(row==NULL) return 0;	//查询结果为空
   back_u->id=string_to_int(row[0]);
   if(row[1]!=NULL)strcpy(back_u->name,row[1]);
   if(row[2]!=NULL)strcpy(back_u->password,row[2]);
@@ -172,4 +173,44 @@ int del_User_Mysql(struct user *u)
   close_my_mysql();
   return 1;
 }
+
+
+
+int change_User_Mysql(struct user *u)
+{
+  mysql_Start();
+  char query[1024];
+  sprintf(query,"update user set name=\"%s\",password=\"%s\"where id=\"%d\";",u->name,u->password,u->id);
+
+  if(mysql_query(mysql,query))
+  {
+    fprintf(stderr, "%s\n", mysql_error(mysql));
+    return 0;
+  } 
+  close_my_mysql();
+  return 1;
+}
+
+
+int show_All_User_Mysql(struct user *u)
+{
+  mysql_Start();
+  char query[1024]="select * from user;";
+  if(mysql_query(mysql,query))
+  {
+    fprintf(stderr, "%s\n", mysql_error(mysql));
+    return 0;
+  }
+  res=mysql_use_result(mysql);
+  while((row=mysql_fetch_row(res))!=NULL)
+  {
+	add_User_Node(row);
+    //printf("id:%s,name:%s,password:%s\n",row[0],row[1],row[2]);
+  }
+  close_my_mysql();
+  return 1;
+
+}
+
+
 

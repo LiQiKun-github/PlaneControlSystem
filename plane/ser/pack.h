@@ -24,6 +24,7 @@ struct user
   int id; //用户id
   char password[32];//用户密码
   char name[32];//用户名
+  struct user *next;
 };
 
 
@@ -42,6 +43,7 @@ struct pack_head *pack_Make(int len,int type,int ver,char *data);
 #define PACK_TYPE_LOGIN_ANSWER 25
 #define USER_LOGIN_TYPE 66
 #define PACK_TYPE_SHOW_ONE_USER 1001
+#define PACK_TYPE_SHOW_ALL_USER 1002
 
 
 

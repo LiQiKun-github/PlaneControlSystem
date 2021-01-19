@@ -10,6 +10,8 @@ void cli_start();
 int add_User_To_Ser(struct user *u);
 int show_One_User_To_Ser(struct user *u);
 int del_User_To_Ser(struct user *u);
+int change_User_To_Ser(struct user *u);
+int show_All_To_Ser(struct user *u);
 
 
 

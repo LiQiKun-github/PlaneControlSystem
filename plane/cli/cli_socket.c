@@ -15,13 +15,69 @@ void tcp_broken(int sig)
   printf("tcp broken\n");
   return ;
 }
+static int write_User(int fd,struct user *u,int type)
+{
+  int ret;
+  struct pack_head *pph;
+  pph=pack_Make(type,sizeof(struct user),PACK_VER_1,(void *)u);
+  ret = write(fd,pph,PACK_HEAD_LEN+sizeof(struct user));
+  if(ret < 0)
+  {
+    perror("write user");
+    return -1;
+  }
+  return ret;
+}
 
+
+int show_All_To_Ser(struct user *u)
+{
+  int ret;
+  ret=write_User(fd,u,SHOW_ALL_USER_TYPE);
+  if(ret<0) return 1;
+  struct pack_head ph;
+  struct user uu;
+  int flag=1;
+  while(flag)
+  {
+    ret=read(fd,&ph,PACK_HEAD_LEN);
+    if(ret<0)
+    {
+	  perror("show all to ser read head");
+	  return -1;
+    }
+	if(ret>0&&ph.type==SHOW_ALL_USER_BACK_TYPE)
+	{
+	  ret=read(fd,&uu,sizeof(struct user));
+	  if(ret<0)
+	  {
+		perror("show all user read data");
+		continue;
+	  }
+	  if(uu.id>0)
+	  {
+		printf("id : %-10d",uu.id);
+		printf("name : %-10s",uu.name);
+		printf("password : %-10s\n",uu.password);
+	  }
+	  else flag=0;
+	}
+  }
+  return 1;
+}
+
+int change_User_To_Ser(struct user *u)
+{
+  int ret=write_User(fd,u,CHANGE_USER_TYPE);
+  printf("change write ret: %d\n",ret);
+  if(ret>0) return 1;
+  else return -1;
+}
 
 //删除单个用户
 //u: 要删除的用户信息（id）
 int del_User_To_Ser(struct user *u)
 {
-  printf("#################del user start\n");
   int ret;
   struct pack_head *p;
 
@@ -74,15 +130,14 @@ int show_One_User_To_Ser(struct user *u)
 	}
 	if(back_u.id<0)
 	{
-	  printf("别闹孩子，没有这个人!!!\n");
+	  u->id=-1;
 	  return 0;
 	}
-	printf("id:%d\n",back_u.id);
-	if(strlen(back_u.name)!=0)printf("name:%s\n",back_u.name);
-	else printf("name:用户名为空\n");
-    printf("password:%s\n",back_u.password);
+	u->id=back_u.id;
+	strcpy(u->name,back_u.name);
+	strcpy(u->password,back_u.password);
   }
-  return 0;
+  return 1;
 }
 
 

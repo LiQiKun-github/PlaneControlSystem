@@ -1,7 +1,6 @@
 #include"common.h"
 #include"cli_link.h"
 #include"pack.h"
-#include"usermysql.h"
 #include"ser.h"
 
 

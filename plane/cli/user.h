@@ -6,6 +6,7 @@ struct user
   int id;
   char password[32];
   char name[32];
+  struct user *next;
 };
 
 

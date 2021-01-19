@@ -52,8 +52,8 @@ void admin_Login()
 	{
 	  case '1':add_User(); break;
 	  case '2':del_User(); break;
-	  case '3':printf("1"); break;
-	  case '4':printf("1"); break;
+	  case '3':change_User(); break;
+	  case '4':show_All_User(); break;
 	  case '5':show_One_User(); break;
 	  case '6':return;
 	}

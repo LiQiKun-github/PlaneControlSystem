@@ -3,6 +3,7 @@
 #include"ser.h"
 #include"cli_link.h"
 #include"user_mysql.h"
+#include"user.h"
 
 //13信号函数
 void tcp_broken(int sig)
@@ -150,11 +151,17 @@ static void  show_One_User(struct cli_t *p)
 {
   struct user u;
   struct user *back_u=(struct user *)malloc(sizeof(struct user));
+  int flag;
   if(!read_User(p->cfd,&u))return ;//read用户信息
-  if(!show_One_User_Mysql(&u,back_u))
+  flag=show_One_User_Mysql(&u,back_u);
+  if(flag<=0)
   {
-	back_u->id=-1;//让客户端知道没有此人
-	printf("别闹孩子，没有这个人!!!\n");
+	if(flag==0)
+	{
+	  back_u->id=-1;//让客户端知道没有此人
+	  printf("别闹孩子，没有这个人!!!\n");
+	}
+	else printf("查询出错...\n");
   }
   else
   {
@@ -172,10 +179,7 @@ printf("###############show one user####################\n");
 
 static void del_User(struct cli_t *p)
 {
-  int ret;
   struct user u;
-  struct pack_head *pph;
-  struct user *back_u=(struct user *)malloc(sizeof(struct user));
   if(!read_User(p->cfd,&u))return ;
   if(del_User_Mysql(&u))
   {
@@ -184,7 +188,41 @@ static void del_User(struct cli_t *p)
   else printf("##################del fail");
 }
 
+static void change_User(struct cli_t *p)
+{
+  struct user u;
+  if(!read_User(p->cfd,&u))return ;
+  if(change_User_Mysql(&u))
+  {
+	printf("################change success\n");
+  }
+  else printf("##################change fail\n");
+}
 
+
+static void show_All_User(struct cli_t *p)
+{
+  printf("##################show all user\n");
+  struct user u;
+  struct user *back_u=NULL;
+  if(!read_User(p->cfd,&u))return ;//取出多与数据
+  if(show_All_User_Mysql(&u)<=0)
+  {
+	printf("################show all user fail\n");
+	return ;
+  }
+  while((back_u=take_Off_Head_Node())!=NULL)
+  {
+    write_User(p->cfd,back_u,PACK_TYPE_SHOW_ALL_USER);
+	free(back_u);
+  }
+
+ struct user uu;
+  //memset(back_u,0x00,sizeof(struct user));
+  uu.id=-1;
+  write_User(p->cfd,&uu,PACK_TYPE_SHOW_ALL_USER);//id为-1让客户端结束read
+  printf("##################show all user success\n");
+}
 
 //对客户端传来的数据包进行分类
 //p:客户端链表节点
@@ -212,24 +250,12 @@ printf("type : %hd\n",ph.type);
 printf("len : %hd\n",ph.len);
 printf("ver : %d\n",ph.ver);
 
-  if(ph.type==USER_LOGIN_TYPE)
-  {
-printf("user_Login\n");
-	user_Login(p);
-  }
-  else if(ph.type==3)
-  {
-printf("user_Add\n");
-	user_Add(p);
-  }
-  else if(ph.type==7)
-  {
-	show_One_User(p);
-  }
-  else if(ph.type==4)
-  {
-	del_User(p);
-  }
+  if(ph.type==USER_LOGIN_TYPE)user_Login(p);
+  else if(ph.type==3)user_Add(p);
+  else if(ph.type==7)show_One_User(p);
+  else if(ph.type==4)del_User(p);
+  else if(ph.type==5)change_User(p);
+  else if(ph.type==6)show_All_User(p);
 
   return 0;
 }

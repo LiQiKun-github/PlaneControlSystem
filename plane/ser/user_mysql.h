@@ -13,6 +13,9 @@ void close_my_mysql();
 int add_User_Mysql(struct user *u);
 int show_One_User_Mysql(struct user *u,struct user *bakc_u);
 int del_User_Mysql(struct user *u);
+int change_User_Mysql(struct user *u);
+int show_All_User_Mysql(struct user *u);
+int string_to_int(char *n);
 
 
 #endif
