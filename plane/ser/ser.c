@@ -224,6 +224,23 @@ static void show_All_User(struct cli_t *p)
   printf("##################show all user success\n");
 }
 
+
+static void start_Experiment(struct cli_t *p)
+{
+  printf("##################start experiment\n");
+  struct experiment_t exp;
+  int ret=read(p->cfd,&exp,sizeof(struct experiment_t));
+  if(ret<0)
+  {
+	perror("start experiment read");
+	return ;
+  }
+  printf("id : %d\n",exp.id);
+  printf("flag : %d\n",exp.start_flag);
+  printf("##################end experiment\n");
+}
+
+
 //对客户端传来的数据包进行分类
 //p:客户端链表节点
 //return	read失败返回-1，客户端断裂返回-2，成功返回0
@@ -256,6 +273,7 @@ printf("ver : %d\n",ph.ver);
   else if(ph.type==4)del_User(p);
   else if(ph.type==5)change_User(p);
   else if(ph.type==6)show_All_User(p);
+  else if(ph.type==2000)start_Experiment(p);
 
   return 0;
 }

@@ -27,6 +27,12 @@ struct user
   struct user *next;
 };
 
+struct experiment_t
+{
+  int id;
+  int start_flag;
+};
+
 
 struct pack_head *pack_Make(int len,int type,int ver,char *data);
 

@@ -5,6 +5,13 @@
 #include"pack.h"
 #include"cli_socket.h"
 #include"admin.h"
+#include"expriment.h"
+
+
+static int user_id;
+
+
+
 
 
 //管理员登陆检查
@@ -69,7 +76,9 @@ static int user_Login_Check()
   while(1)
   {
     struct user *u=create_User();
+	user_id=u->id;
     int flag=user_Identity_Test(u,USER_LOGIN_TYPE);
+	free(u);
     if(flag ==1)
     {
       printf("恭喜你登陆成功！！！\n");
@@ -90,10 +99,36 @@ static int user_Login_Check()
 
 }
 
+
+
+//实验案例菜单
+static void experiment_Menu()
+{
+  char sel;
+  while(1)
+  {
+	printf("%s",EXPERIMENTMENU);
+	scanf("%c",&sel);
+	while(getchar()!='\n');
+	switch(sel)
+	{
+	  case '1':add_Expriment();break;
+	  case '2':printf("1\n");break;
+	  case '3':printf("1\n");break;
+	  case '4':printf("1\n");break;
+	  case '5':printf("1\n");break;
+	  case '6':start_Experiment(user_id);break;
+	  case '7':printf("1\n");return;
+	}
+  }
+}
+
 //用户登陆
 static void user_Login()
 {
-  user_Login_Check();
+  if(!user_Login_Check())return;
+  experiment_Menu();
+
 }  
 
 

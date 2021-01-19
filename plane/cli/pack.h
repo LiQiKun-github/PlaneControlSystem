@@ -16,6 +16,12 @@ struct answer_t
 };
 
 
+struct experiment_t
+{
+  int id;
+  int start_flag;
+};
+
 
 struct pack_head *pack_Make(short type,int len,int ver,void *data);
 
@@ -32,7 +38,7 @@ struct pack_head *pack_Make(short type,int len,int ver,void *data);
 #define PACK_TYPE_LOGIN_ANSWER 25	//登陆回馈
 #define SHOW_ONE_USER_BACK_TYPE 1001	//查询单个用户回馈的数据包类型
 #define SHOW_ALL_USER_BACK_TYPE 1002	//查询所有用户回馈的数据包类型
-
+#define PACK_TYPE_START_EXPERIMENT 2000	//开始实验
 #define ADD_USER_TYPE 3	//添加用户
 #define DEL_USER_TYPE 4	//删除用户
 #define CHANGE_USER_TYPE 5	//更改用户信息

@@ -5,8 +5,36 @@
 #include"user.h"
 #include"pack.h"
 
-
 static int fd;
+
+
+
+
+
+int start_Experiment_To_Ser(int user_id)
+{
+  
+  int ret;
+  struct pack_head *pph;
+  struct experiment_t exp;
+  exp.id=user_id;
+  exp.start_flag=1;
+  pph=pack_Make(PACK_TYPE_START_EXPERIMENT,sizeof(struct experiment_t),PACK_VER_1,(void *)&exp);
+  ret=write(fd,pph,PACK_HEAD_LEN+sizeof(struct experiment_t));
+  if(ret<0)
+  {
+	perror("start experiment write");
+	return -1;
+  }
+  return 1;
+  
+}
+
+
+
+
+
+
 
 
 //信号13
@@ -15,6 +43,9 @@ void tcp_broken(int sig)
   printf("tcp broken\n");
   return ;
 }
+
+
+
 static int write_User(int fd,struct user *u,int type)
 {
   int ret;
@@ -191,7 +222,6 @@ int user_Identity_Test(struct user *u,int pack_type)
     return -2;
   }
   free(p);
-  free(u);
   ret = read(fd,&ph,PACK_HEAD_LEN);
   if(ret>0&&ph.type==PACK_TYPE_LOGIN_ANSWER)
   {
