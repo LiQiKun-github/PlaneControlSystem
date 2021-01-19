@@ -4,6 +4,7 @@
 #include"cli_link.h"
 #include"user_mysql.h"
 #include"user.h"
+#include"experiment.h"
 
 //13信号函数
 void tcp_broken(int sig)
@@ -235,8 +236,11 @@ static void start_Experiment(struct cli_t *p)
 	perror("start experiment read");
 	return ;
   }
-  printf("id : %d\n",exp.id);
-  printf("flag : %d\n",exp.start_flag);
+printf("user_id : %d\n",exp.id);
+printf("flag : %d\n",exp.start_flag);
+printf("filename : %s\n",exp.filename);
+  if(exp.start_flag!=1) {printf("数据错误\n");return ;}
+  else experiment_Manage(exp.id,exp.filename);	//experiment.c	对传来的的实验文件进行管理
   printf("##################end experiment\n");
 }
 

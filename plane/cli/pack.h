@@ -20,6 +20,7 @@ struct experiment_t
 {
   int id;
   int start_flag;
+  char filename[96];
 };
 
 

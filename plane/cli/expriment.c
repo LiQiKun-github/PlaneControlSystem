@@ -27,10 +27,10 @@ static void add_Equipment(char *filename)
   int relative_time;
   int frequency;
   int time;
-  char *data=(char *)malloc(1024);
+  char *data=(char *)malloc(96);
   while(1)
   {
-	memset(data,0x00,1024);
+	memset(data,0x00,96);
 	printf("%s",EQUIPMENTMENU);
 	scanf("%c",&sel);while(getchar()!='\n');
 	switch(sel)
@@ -87,12 +87,19 @@ void add_Expriment()
 void start_Experiment(int user_id)
 {
   printf("请输入你要开始的实验案例：");
-  char filename[1024];
+  char filename[96];
   scanf("%s",filename);
-  char buf[2048];
+  while(getchar()!='\n');
+  char buf[1024];
+  char file[200];
+  sprintf(file,"/home/shangqian/桌面/plane/cli/Expriment/%s",filename);
   sprintf(buf,"scp shangqian@127.0.0.1:/home/shangqian/桌面/plane/cli/Expriment/%s /home/shangqian/桌面/plane/ser/Expriment/",filename);
-  system(buf);
-  while(getchar()!='\n');//清除换行
-  start_Experiment_To_Ser(user_id);
+  if(access(file,F_OK)==0)system(buf);
+  else
+  {
+	printf("没有这个实验案例...\n");
+	return ;
+  }
+  start_Experiment_To_Ser(user_id,filename);
 }
 

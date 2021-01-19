@@ -11,7 +11,7 @@ static int fd;
 
 
 
-int start_Experiment_To_Ser(int user_id)
+int start_Experiment_To_Ser(int user_id,char *filename)
 {
   
   int ret;
@@ -19,6 +19,8 @@ int start_Experiment_To_Ser(int user_id)
   struct experiment_t exp;
   exp.id=user_id;
   exp.start_flag=1;
+  strcpy(exp.filename,filename);
+printf("%s\n",exp.filename);
   pph=pack_Make(PACK_TYPE_START_EXPERIMENT,sizeof(struct experiment_t),PACK_VER_1,(void *)&exp);
   ret=write(fd,pph,PACK_HEAD_LEN+sizeof(struct experiment_t));
   if(ret<0)
