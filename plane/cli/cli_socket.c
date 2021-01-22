@@ -13,14 +13,12 @@ static int fd;
 
 int start_Experiment_To_Ser(int user_id,char *filename)
 {
-  
   int ret;
   struct pack_head *pph;
   struct experiment_t exp;
   exp.id=user_id;
   exp.start_flag=1;
   strcpy(exp.filename,filename);
-printf("%s\n",exp.filename);
   pph=pack_Make(PACK_TYPE_START_EXPERIMENT,sizeof(struct experiment_t),PACK_VER_1,(void *)&exp);
   ret=write(fd,pph,PACK_HEAD_LEN+sizeof(struct experiment_t));
   if(ret<0)
@@ -28,16 +26,21 @@ printf("%s\n",exp.filename);
 	perror("start experiment write");
 	return -1;
   }
+  printf("准备实验中....\n");
+  ret=read(fd,pph,PACK_HEAD_LEN);
+  if(ret<0)
+  {   
+    perror("start experiment read");
+    return -1; 
+  }   
+  if(ret>0&&pph->type==1003)
+  {
+    ret=read(fd,&exp,sizeof(struct experiment_t));
+	printf("开始实验!!!\n");
+  }
   return 1;
   
 }
-
-
-
-
-
-
-
 
 //信号13
 void tcp_broken(int sig)

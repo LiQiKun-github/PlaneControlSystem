@@ -6,6 +6,10 @@
 #include"user.h"
 #include"experiment.h"
 
+static struct equipment_t *equ_head=NULL;
+static int exp_flag=0;
+
+
 //13信号函数
 void tcp_broken(int sig)
 {
@@ -228,20 +232,88 @@ static void show_All_User(struct cli_t *p)
 
 static void start_Experiment(struct cli_t *p)
 {
+  struct pack_head *pph;
   printf("##################start experiment\n");
   struct experiment_t exp;
+  p->equipment_id=0;
   int ret=read(p->cfd,&exp,sizeof(struct experiment_t));
   if(ret<0)
   {
 	perror("start experiment read");
 	return ;
   }
+  if(exp.start_flag==1) 
+  {
+	experiment_Manage(exp.id,exp.filename);	//experiment.c	对传来的的实验文件进行管理
+  }
+  else {printf("数据错误\n");return ;}
+  pph=pack_Make(sizeof(struct experiment_t),PACK_TYPE_START_EXPERIMENT_ANSWER,PACK_VER_1,(void *)&exp);
+  ret=write(p->cfd,pph,sizeof(struct experiment_t)+PACK_HEAD_LEN);
 printf("user_id : %d\n",exp.id);
 printf("flag : %d\n",exp.start_flag);
 printf("filename : %s\n",exp.filename);
-  if(exp.start_flag!=1) {printf("数据错误\n");return ;}
-  else experiment_Manage(exp.id,exp.filename);	//experiment.c	对传来的的实验文件进行管理
-  printf("##################end experiment\n");
+
+  exp_flag=1;//表示服务端在开始实验
+
+  //printf("##################end experiment\n");
+}
+
+/*用于测试*/
+void print_Equ_Link()
+{
+  struct equipment_t *h=equ_head;
+
+  while(h!=NULL)
+  {
+	printf("equ->id : %d\n",h->id);
+	h=h->next;
+  }
+}
+
+
+int find_Equipment_Fd(int action_id)
+{
+  struct equipment_t *h=equ_head;
+  if(h==NULL) printf("#################NULL\n");
+  while(h!=NULL)
+  {
+	if(h->id==action_id/100*100)
+	{
+	  printf("h->id : %d\n",h->id);
+	  return h->fd;
+	}
+	h=h->next;
+  }
+  return -1;
+}
+
+
+void write_Data_To_Equipment(struct order_t *temp)
+{
+  int fd=find_Equipment_Fd(temp->action_id);
+  struct pack_head *p;
+  p=pack_Make(sizeof(struct order_t),PACK_TYPE_EXPERIMENT_DATA,PACK_VER_1,(void *)temp);
+  int ret=write(fd,p,sizeof(struct order_t)+PACK_HEAD_LEN);
+printf("ret = %d\n",ret);
+}
+
+static void add_equipment(struct cli_t *p)
+{
+  struct equipment_t *equ=(struct equipment_t *)malloc(sizeof(struct equipment_t));
+  memset(equ,0x00,sizeof(struct equipment_t));
+  int ret=read(p->cfd,equ,sizeof(struct equipment_t));
+  if(ret<0)
+  {
+	perror("equipment read data");
+	return ;
+  }
+  p->equipment_id=equ->id;
+  equ->fd=p->cfd;
+  equ->next=equ_head;
+  equ_head=equ;
+printf("add equ id : :%d\n",equ->id);
+printf("add equ fd : :%d\n",equ->id);
+  //free(equ);
 }
 
 
@@ -278,6 +350,7 @@ printf("ver : %d\n",ph.ver);
   else if(ph.type==5)change_User(p);
   else if(ph.type==6)show_All_User(p);
   else if(ph.type==2000)start_Experiment(p);
+  else if(ph.type==3000)add_equipment(p);
 
   return 0;
 }
@@ -286,8 +359,8 @@ printf("ver : %d\n",ph.ver);
 //epoll
 int epoll_Go()
 {
+printf("server...\n");
   int fd,efd,nfd;
-  //int ret;
   int num_epoll;//处于准备状态的个数
   struct sockaddr_in caddr;
   struct epoll_event events[20],ev;
@@ -314,12 +387,13 @@ int epoll_Go()
   epoll_ctl(efd,EPOLL_CTL_ADD,fd,&ev);
   while(1)
   {
-	printf("epoll wait..\n");
-	num_epoll = epoll_wait(efd,events,20,-1);
-	printf("num_epoll : %d\n",num_epoll);
+	num_epoll = epoll_wait(efd,events,20,333);
 	if(num_epoll==0)
 	{
-	  printf("time over\n");
+	  if(exp_flag==1)
+	  {
+	   if(exe_Order_Link()==-1) exp_flag=0;
+	  }
 	  continue;
 	}
 
@@ -329,7 +403,6 @@ int epoll_Go()
 	  if(events[i].data.fd==fd)
 	  {
 	  addr_len=sizeof(caddr);
-	  printf("accept..\n");
       nfd = accept(fd,(struct sockaddr *)&caddr,&addr_len);//接收
 	  if(nfd<0)
 	  {
@@ -353,8 +426,11 @@ int epoll_Go()
 		  cli_recv(p);//处理事件
 	  }
 	}
+	if(exp_flag==1)
+	{
+	  if(exe_Order_Link()==-1) exp_flag=0;
+	}
 	cli_close();//关闭无用的文件描述符
-	//print_link();
   }
 
   return 1;

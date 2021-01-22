@@ -27,17 +27,28 @@
   						"\t\t\t\t2.暂无功能\n"\
 						"\t\t\t\t3.退出不保存\n"\
 						"\t\t\t\t4.退出并保存\n"\
-						"Please input num:"
+						"\t\t\t\tPlease input num:"
 
 #define EQUIPMENTMENU	"\t\t\t\t1.环境装置\n"\
-  						"\t\t\t\t2.刹车装置\n"\
+  						"\t\t\t\t2.机轮装置\n"\
 						"\t\t\t\t3.胎压装置\n"\
 						"\t\t\t\t4.机翼装置\n"\
 						"\t\t\t\t5.起落架装置\n"\
 						"\t\t\t\t6.结束\n"\
-						"Please input num:"
+						"\t\t\t\tPlease input num:"
 
+#define ENVIRMONIMENU	"\t\t\t\t1.模拟飞行高度\n"\
+  						"\t\t\t\t2.模拟风速\n"\
+						"\t\t\t\t3.返回上一级\n"\
+						"\t\t\t\tPlease input num:"
 
+#define PLANEWHEELMONIMENU	"\t\t\t\t1.模拟机轮\n"\
+  							"\t\t\t\t2.返回上一级\n"\
+							"\t\t\t\tPlease input num:"
+
+#define TIREPRESSMONIMENU	"\t\t\t\t1.模拟胎压\n"\
+  							"\t\t\t\t2.返回上一级\n"\
+							"\t\t\t\tPlease input num:"
 
 
 

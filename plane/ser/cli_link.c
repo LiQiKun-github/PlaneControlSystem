@@ -89,9 +89,9 @@ void add_cli_node(int nfd,struct sockaddr_in caddr)
   p->addr=caddr;
   p->count=0;
   p->close_flag=0;
+  p->equipment_id=-1;
   p->next=head;
   head=p;
-
 }
 
 

@@ -16,6 +16,7 @@ int del_User_Mysql(struct user *u);
 int change_User_Mysql(struct user *u);
 int show_All_User_Mysql(struct user *u);
 int string_to_int(char *n);
+int experiment_Mysql(char *expname,int delflag,char *starttime,int userid);
 
 
 #endif

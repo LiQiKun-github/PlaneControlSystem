@@ -212,5 +212,20 @@ int show_All_User_Mysql(struct user *u)
 
 }
 
-
+int experiment_Mysql(char *expname,int delflag,char *starttime,int userid)
+{
+  mysql_Start();
+  char query[1024];
+  starttime[24]='\0';
+  //char starttime0[64];
+  //sscanf(starttime,"%s\n",starttime0);
+  sprintf(query,"insert into experiment(expname,filename,delflag,starttime,userid) value(\"%s\",\"%s\",%d,\"%s\",%d);",expname,expname,delflag,starttime,userid);
+  if(mysql_query(mysql,query))
+  {
+	fprintf(stderr, "%s\n", mysql_error(mysql));
+	return 0;
+  }
+  else return 1;
+  close_my_mysql();
+}
 

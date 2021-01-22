@@ -34,6 +34,13 @@ struct experiment_t
   char filename[96];
 };
 
+struct equipment_t
+{
+  int id;
+  int fd;
+  struct equipment_t *next;
+};
+
 
 struct pack_head *pack_Make(int len,int type,int ver,char *data);
 
@@ -51,6 +58,9 @@ struct pack_head *pack_Make(int len,int type,int ver,char *data);
 #define USER_LOGIN_TYPE 66
 #define PACK_TYPE_SHOW_ONE_USER 1001
 #define PACK_TYPE_SHOW_ALL_USER 1002
+#define PACK_TYPE_START_EXPERIMENT_ANSWER 1003 //回复客户端文件已经接收
+#define PACK_TYPE_EXPERIMENT_DATA	1004//给模拟设备发送数据
+#define PACK_TYPE_EXPERIMENT_REPORT 1005//给pc返回实验报告数据
 
 
 

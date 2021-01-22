@@ -19,37 +19,99 @@ static int write_In_File(char *filename,char *buf,int len)
   return 1;
 }
 
-static void add_Equipment(char *filename)
+void write_Order_In_Experiment_File(char *filename,int action_id)
 {
-  char sel;
   char buf[1024];
-  int action_id;
   int relative_time;
   int frequency;
   int time;
   char *data=(char *)malloc(96);
+  memset(data,0x00,96);
+  printf("请输入相对时间:");scanf("%d",&relative_time);while(getchar()!='\n');
+  printf("请输入次数:");scanf("%d",&frequency);while(getchar()!='\n');
+  printf("请输入时间间隔:");scanf("%d",&time);while(getchar()!='\n');
+  printf("请输入操作数据");scanf("%s",data);while(getchar()!='\n');
+  sprintf(buf,"%-10d%-10d%-10d%-10d%-10s",relative_time,action_id,frequency,time,data);
+  if(!write_In_File(filename,buf,strlen(buf))){free(data);return;}//写入失败退出
+  free(data);
+}
+
+void environmental_Simulation(char *filename)
+{
+  int action_id;
   while(1)
   {
-	memset(data,0x00,96);
+	char sel;
+	printf("%s",ENVIRMONIMENU);
+	scanf("%c",&sel); while(getchar()!='\n');
+	switch(sel)
+	{
+	  case '1':action_id=101;break;
+	  case '2':action_id=102;break;
+	  case '3':return;
+	  default:continue;
+	}
+	write_Order_In_Experiment_File(filename,action_id);
+  }
+}
+
+void planewheel_Simulation(char *filename)
+{
+  int action_id;
+  while(1)
+  {
+    char sel;
+    printf("%s",PLANEWHEELMONIMENU);
+    scanf("%c",&sel); while(getchar()!='\n');
+    switch(sel)
+    {   
+      case '1':action_id=201;break;
+      case '2':return;
+	  default:continue;
+    }   
+    write_Order_In_Experiment_File(filename,action_id);
+  }
+}
+
+
+
+void tirepress_Simulation(char *filename)
+{
+  int action_id;
+  while(1)
+  {
+    char sel;
+    printf("%s",TIREPRESSMONIMENU);
+    scanf("%c",&sel); while(getchar()!='\n');
+    switch(sel)
+    {
+      case '1':action_id=301;break;
+      case '2':return;
+	  default:continue;
+    }
+    write_Order_In_Experiment_File(filename,action_id);
+  }
+}
+
+
+
+static void add_Equipment(char *filename)
+{
+  char sel;
+  while(1)
+  {
 	printf("%s",EQUIPMENTMENU);
 	scanf("%c",&sel);while(getchar()!='\n');
 	switch(sel)
 	{
-	  case '1':action_id=1;break;
-	  case '2':action_id=2;break;
-	  case '3':action_id=3;break;
-	  case '4':action_id=4;break;
-	  case '5':action_id=5;break;
+	  case '1':environmental_Simulation(filename);break;
+	  case '2':planewheel_Simulation(filename);break;
+	  case '3':tirepress_Simulation(filename);break;
+	  case '4':printf("暂无功能\n");break;
+	  case '5':printf("暂无功能\n");break;
 	  case '6':return;
 	}
-	printf("请输入相对时间:");scanf("%d",&relative_time);while(getchar()!='\n');
-	printf("请输入次数:");scanf("%d",&frequency);while(getchar()!='\n');
-	printf("请输入时间间隔:");scanf("%d",&time);while(getchar()!='\n');
-	printf("请输入操作数据(暂时无用)");scanf("%s",data);while(getchar()!='\n');
-	sprintf(buf,"%-10d%-10d%-10d%-10d%-10s",relative_time,action_id,frequency,time,data);
-  	if(!write_In_File(filename,buf,strlen(buf))){free(data);return;}//写入失败退出
   }
-  free(data);
 }
 
 //创建实验案例
